@@ -44,7 +44,7 @@ class NextrasMigrationsExtension extends Extension
 
 		$driverAlias = $config['driver'];
 		$driverDefinition = new Definition($this->drivers[$driverAlias]);
-		$driverDefinition->setArgument('$dbal', $dbalDefinition);
+		$driverDefinition->setArguments(['$dbal' => $dbalDefinition]);
 
 		$container->addDefinitions([
 			'nextras_migrations.dbal' => $dbalDefinition,
@@ -59,7 +59,7 @@ class NextrasMigrationsExtension extends Extension
 		if ($config['diff_generator'] === 'doctrine') {
 			$structureDiffGeneratorDefinition = new Definition('Nextras\Migrations\Bridges\DoctrineOrm\StructureDiffGenerator');
 			$structureDiffGeneratorDefinition->setAutowired(TRUE);
-			$structureDiffGeneratorDefinition->setArgument('$ignoredQueriesFile', $config['ignored_queries_file']);
+			$structureDiffGeneratorDefinition->setArguments(['$ignoredQueriesFile' => $config['ignored_queries_file']]);
 
 		} else {
 			$structureDiffGeneratorDefinition = NULL;

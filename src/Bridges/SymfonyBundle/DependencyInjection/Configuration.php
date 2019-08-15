@@ -15,12 +15,23 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
+	const SYMFONY_KERNEL_CLASS = 'Symfony\Component\HttpKernel\Kernel';
+
 	public function getConfigTreeBuilder()
 	{
+		if (
+			class_exists(self::SYMFONY_KERNEL_CLASS) &&
+			constant('Symfony\Component\HttpKernel\Kernel::VERSION_ID') < 30300
+		) {
+			$dirDefaultValue = '%kernel.root_dir%/../migrations';
+		} else {
+			$dirDefaultValue = '%kernel.project_dir%/migrations';
+		}
+
 		$treeBuilder = new TreeBuilder();
 		$treeBuilder->root('nextras_migrations')->children()
 			->scalarNode('dir')
-				->defaultValue('%kernel.project_dir%/migrations')
+				->defaultValue($dirDefaultValue)
 				->cannotBeEmpty()
 				->end()
 			->enumNode('dbal')
@@ -40,7 +51,7 @@ class Configuration implements ConfigurationInterface
 				->defaultFalse()
 				->end()
 			->arrayNode('php_params')
-				->variablePrototype()
+				->prototype('variable')
 					->end()
 				->end()
 			->scalarNode('ignored_queries_file')
